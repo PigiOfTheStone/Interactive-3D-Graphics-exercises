@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title></title>
+    <style>
+      body {
+        font-family: monospace;
+        background-color: #f0f0f0;
+        margin: 0px;
+        overflow: hidden;
+      }
+
+      canvas {
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+
+    <script src="lib/three.min.js"></script>
+    <script src="lib/stats.min.js"></script>
+    <script src="lib/OrbitControls.js"></script>
+  </head>
+  <body>
+    <script>
+      var scene, render, camera, stats;
+
+      function Start() {
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0xf0f0f0);
+        document.body.appendChild( renderer.domElement);
+        var orbit = new THREE.OrbitControls( camera, renderer.domElement);
+
+        var geometry = new THREE.BoxGeometry(7,5,7);
+        var texture = new THREE.TextureLoader().load('texture/wall.jpg');
+        var material = new THREE.MeshBasicMaterial({ map: texture });
+        var casa = new THREE.Mesh(geometry, material);
+        scene.add(casa);
+
+        var geometry = new THREE.ConeGeometry(6,3,4);
+        //var texture = new THREE.TextureLoader().load('texture/roof.jpg');
+        var material = new THREE.MeshBasicMaterial({ color: 0x000000  });
+        var tetto = new THREE.Mesh(geometry,material);
+        tetto.position.set(0,4,0);
+        tetto.rotation.y = 45 * Math.PI/180;
+        scene.add(tetto);
+
+
+        var geometry = new THREE.BoxGeometry(1.5,2,0.0002);
+        var texture = new THREE.TextureLoader().load('texture/door.jpg');
+        var material = new THREE.MeshBasicMaterial({ map: texture });
+        var porta = new THREE.Mesh(geometry, material);
+        porta.position.z = 3.5;
+        porta.position.y = -1.5;
+        scene.add(porta);
+
+
+        //Statistiche sul frame rate
+        stats = new Stats();
+        stats.domElement.style.position = 'absolute';
+        stats.domElement.style.top = '0px';
+        document.body.appendChild(stats.domElement);
+
+        //Posizione della camera
+        camera.position.z = 15;
+        camera.position.x = 0;
+        camera.position.y = 0;
+
+      }
+
+      function Render() {
+        requestAnimationFrame(Render);
+        stats.update();
+        renderer.render(scene, camera);
+        //petal.rotateX(10);
+
+
+      }
+
+      Start();
+      Render();
+
+    </script>
+  </body>
+</html>

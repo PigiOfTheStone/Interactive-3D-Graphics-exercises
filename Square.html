@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Draw a square</title>
+    <style>
+      body {
+        font-family: monospace;
+        background-color: #f0f0f0;
+        margin: 0px;
+        overflow: hidden;
+      }
+
+      canvas {
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+
+    <script src="lib/three.min.js"></script>
+    <script src="lib/stats.min.js"></script>
+  </head>
+  <body>
+    <script>
+      var scene, render, camera, stats;
+
+      function Start() {
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0xf0f0f0);
+        document.body.appendChild( renderer.domElement);
+
+        var triangle = new THREE.Geometry();
+
+
+        triangle.vertices.push( new THREE.Vector3(0,0,0), new THREE.Vector3(1,0,0), new THREE.Vector3(1,1,0), new THREE.Vector3(0,1,0), new THREE.Vector3(0,1,1), new THREE.Vector3(1,1,1), new THREE.Vector3(1,0,1), new THREE.Vector3(0,0,1) );
+        triangle.faces.push( new THREE.Face3(0,1,2), new THREE.Face3(0,2,3), new THREE.Face3(1,5,2), new THREE.Face3(1,6,5), new THREE.Face3(3,2,5), new THREE.Face3(3,5,4), new THREE.Face3(0,4,3));
+
+        var material = new THREE.MeshBasicMaterial( { color:0xff66cc, side: THREE.FrontSide } );
+
+        square = new THREE.Mesh(triangle, material);
+
+        scene.add( square);
+
+        //Statistiche sul frame rate
+        stats = new Stats();
+        stats.domElement.style.position = 'absolute';
+        stats.domElement.style.top = '0px';
+        document.body.appendChild(stats.domElement);
+
+        camera.position.z = 5;
+      }
+
+      function Render() {
+        requestAnimationFrame(Render);
+        stats.update();
+        renderer.render(scene, camera);
+      }
+
+      Start();
+      Render();
+
+    </script>
+  </body>
+</html>

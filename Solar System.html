@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Solar System</title>
+    <style>
+      body {
+        font-family: monospace;
+        background-color: #ffffff;
+        margin: 0px;
+        overflow: hidden;
+      }
+
+      canvas {
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+
+    <script src="lib/three.min.js"></script>
+    <script src="lib/stats.min.js"></script>
+    <script src="lib/OrbitControls.js"></script>
+    <script src='lib/TextureLoader.js'></script>
+    <script src='lib/Loader.js'></script>
+  </head>
+  <body>
+    <script>
+      var scene, render, camera, stats, earth, sun, moon, thetaEarth, thetaMoon, earthPosition, group, groupPosition, moonPosition, mercuryPosition, thetaMercury, thetaMars, thetaVenus, venusPosition, marsPosition;
+
+      function Start() {
+
+        //scena, camera e renderer
+        scene = new THREE.Scene();
+        scene.background = new THREE.TextureLoader().load('texture/stars.jpg');
+        camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 0.1, 1000);
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0x000000);
+        document.body.appendChild( renderer.domElement);
+        scene.add(camera);
+
+        //illuminazione
+        var light = new THREE.AmbientLight( 0x404040 );
+        scene.add(light);
+
+        //controllo orbita telecamera
+        var orbit = new THREE.OrbitControls( camera, renderer.domElement);
+        orbit.panningMode = 5;
+
+        //SOLE
+        var geometry = new THREE.SphereGeometry(70, 64, 64);
+        var texture = new THREE.TextureLoader().load('texture/sun.jpg') //carica la texture del Sole
+        var material = new THREE.MeshBasicMaterial({ map: texture });
+        sun = new THREE.Mesh(geometry, material);
+        scene.add(sun);
+
+        //TERRA
+        var geometry = new THREE.SphereGeometry(6.35, 32, 32);
+        var texture = new THREE.TextureLoader().load('texture/earth-texture.jpg') //carica la texture della Terra
+        var material = new THREE.MeshBasicMaterial({ map: texture });
+        earth = new THREE.Mesh(geometry, material);
+        earth.position.set(sun.position.x + 220, 0, 0);
+        earth.rotation.z = 23 * Math.PI/180;
+        earth.parent = sun;
+        earthPosition = earth.position.x;
+        thetaEarth = 0; //angolo di partenza per la rivoluzione
+
+        //LUNA
+        var geometry = new THREE.SphereGeometry(1.58, 32, 32);
+        var texture = new THREE.TextureLoader().load('texture/moon.png') //carica la texture della Luna
+        var material = new THREE.MeshBasicMaterial({ map: texture});
+        moon = new THREE.Mesh( geometry, material);
+        moon.position.set(earthPosition + 10, 0, 0);
+        moon.parent = earth;
+        moonPosition = moon.position.x;
+        thetaMoon = 0; //angolo di partenza per la rivoluzione intorno alla Terra
+
+        //gruppo oggetti Terra-Luna
+        group = new THREE.Object3D();
+        group.add(moon, earth);
+        scene.add(group);
+        groupPosition = group.position.x;
+
+        //MERCURIO
+        var geometry = new THREE.SphereGeometry(2.4, 32, 32);
+        var texture = new THREE.TextureLoader().load('texture/mercury.jpg');
+        var material = new THREE.MeshBasicMaterial({ map: texture});
+        mercury = new THREE.Mesh(geometry, material);
+        mercury.position.set(sun.position.x + 127, 0, 0);
+        mercuryPosition = mercury.position.x;
+        thetaMercury = 0; //angolo di partenza per la rivoluzione intorno al Sole
+        scene.add(mercury);
+
+        //VENERE
+        var geometry = new THREE.SphereGeometry(6.05, 32, 32);
+        var texture = new THREE.TextureLoader().load('texture/venus.jpg');
+        var material = new THREE.MeshBasicMaterial({ map: texture });
+        venus = new THREE.Mesh(geometry, material);
+        venus.position.set(sun.position.x + 178, 0, 0);
+        venusPosition = venus.position.x;
+        thetaVenus = 0; //angolo di partenza per la rivoluzione intorno al Sole
+        scene.add(venus);
+
+        //MARTE
+        var geometry = new THREE.SphereGeometry(3.35, 32, 32);
+        var texture = new THREE.TextureLoader().load('texture/mars.jpg');
+        var material = new THREE.MeshBasicMaterial({ map: texture });
+        mars = new THREE.Mesh(geometry, material);
+        mars.position.set(sun.position.x + 297, 0, 0);
+        marsPosition = mars.position.x;
+        thetaMars = 0; //angolo di partenza per la rivoluzione intorno al Sole
+        scene.add(mars);
+
+        /*SATURNO
+        var geometry = new THREE.SphereGeometry(8, 32, 32);
+        var geometry2 = new THREE.TorusGeometry(10, 2.5, 2, 58);
+        var texture = new THREE.TextureLoader().load('texture/saturn.jpg');
+        var material = new THREE.MeshBasicMaterial({ map: texture });
+        var material2 = new THREE.MeshBasicMaterial({ color: 0xffffff});
+        saturn = new THREE.Mesh(geometry, material);
+        rings = new THREE.Mesh(geometry2, material)
+        saturn.position.set(sun.position.x + 350, 0, 0);
+        rings.position.set(sun.position.x + 355, 0, 0);
+        rings.rotation.x = 90 * Math.PI/180;
+        saturnPosition = saturn.position.x;
+        thetaSaturn = 0; //angolo di partenza per la rivoluzione intorno al Sole
+        scene.add(saturn);
+        scene.add(rings);
+        */
+
+
+
+        //Statistiche sul frame rate
+        stats = new Stats();
+        stats.domElement.style.position = 'absolute';
+        stats.domElement.style.top = '0px';
+        document.body.appendChild(stats.domElement);
+
+        //Posizione della camera
+        camera.position.z = 180;
+
+
+      }
+
+      function Render() {
+        requestAnimationFrame(Render);
+        stats.update();
+        renderer.render(scene, camera);
+
+        //rotazione Sole intorno al suo asse
+        var axis = new THREE.Vector3(0,1,0);
+        sun.rotateOnWorldAxis(axis, 0.009);
+
+
+        //rotazione Terra intorno al suo asse
+        var axis = new THREE.Vector3(0, 1, 0);
+        earth.rotateOnWorldAxis(axis, 0.016);
+
+        //moto di rivoluzione Terra intorno al Sole
+        var r1 = Math.abs(earthPosition - sun.position.x);
+        var dThetaEarth = -0.0164 * Math.PI/180;
+        thetaEarth += dThetaEarth;
+        earth.position.x = r1 * Math.cos(thetaEarth);
+        earth.position.z = r1 * Math.sin(thetaEarth);
+
+        //moto di rotazione Luna intorno al suo asse
+        var axisMoon = new THREE.Vector3(0, 1, 0);
+        moon.rotateOnWorldAxis(axisMoon, -0.001226);
+
+        //moto di rivoluzione luna intorno alla Terra
+        var r2 = Math.abs(moonPosition - earthPosition);
+        var dThetaMoon = -0.197 * Math.PI/180;
+        thetaMoon += dThetaMoon;
+        moon.position.x = (r2 * Math.cos(thetaMoon)) + earth.position.x;
+        moon.position.z = (r2 * Math.sin(thetaMoon)) + earth.position.z;
+
+        //moto di rivoluzione Mercurio intorno al Sole
+        var r3 = Math.abs( mercuryPosition - sun.position.x );
+        var dThetaMercury = -0.075 * Math.PI/180;
+        thetaMercury += dThetaMercury;
+        mercury.position.x = r3 * Math.cos(thetaMercury);
+        mercury.position.z = r3 * Math.sin(thetaMercury);
+
+        //moto di rivoluzione Venere intorno al Sole
+        var r4 = Math.abs( venusPosition - sun.position.x );
+        var dThetaVenus = -0.024 * Math.PI/180;
+        thetaVenus += dThetaVenus;
+        venus.position.x = r4 * Math.cos(thetaVenus);
+        venus.position.z = r4 * Math.sin(thetaVenus);
+
+        //moto di rivoluzione Marte intorno al Sole
+        var r5 = Math.abs( marsPosition - sun.position.x );
+        var dThetaMars = -0.0086 * Math.PI/180;
+        thetaMars += dThetaMars;
+        mars.position.x = r5 * Math.cos(thetaMars);
+        mars.position.z = r5 * Math.sin(thetaMars);
+
+        //Debug
+        console.log( camera.position );
+
+      }
+
+      Start();
+      Render();
+
+    </script>
+  </body>
+</html>

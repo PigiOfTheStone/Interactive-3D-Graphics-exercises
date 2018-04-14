@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Cube</title>
+    <style>
+      body {
+        font-family: monospace;
+        background-color: #f0f0f0;
+        margin: 0px;
+        overflow: hidden;
+      }
+
+      canvas {
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+
+    <script src="lib/three.min.js"></script>
+    <script src="lib/stats.min.js"></script>
+    <script src="lib/OrbitControls.js"></script>
+  </head>
+  <body>
+    <script>
+      var scene, render, camera, stats;
+
+      function Start() {
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0xf0f0f0);
+        document.body.appendChild( renderer.domElement);
+        //spostamento camera
+        var orbit = new THREE.OrbitControls( camera, renderer.domElement);
+
+        //faccia frontale anteriore
+        var triangleFace1 = new THREE.Geometry();
+        triangleFace1.vertices.push( new THREE.Vector3(0,0,0), new THREE.Vector3(1,0,0), new THREE.Vector3(1,1,0), new THREE.Vector3(0,1,0));
+        triangleFace1.faces.push( new THREE.Face3(0,1,2), new THREE.Face3(0,2,3))
+        var material = new THREE.MeshBasicMaterial( { color:0xffa500, wireframe: false} ); //Arancione
+        face1 = new THREE.Mesh(triangleFace1, material);
+        scene.add(face1);
+
+        //faccia frontale posteriore
+        var triangleBackFace = new THREE.Geometry();
+        triangleBackFace.vertices.push( new THREE.Vector3(0,0,-1), new THREE.Vector3(1,0,-1), new THREE.Vector3(0,1,-1), new THREE.Vector3(1,1,-1));
+        triangleBackFace.faces.push( new THREE.Face3(3,1,0), new THREE.Face3(2,3,0));
+        var material = new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe: false}); //Rosso
+        backFace = new THREE.Mesh(triangleBackFace, material);
+        scene.add(backFace);
+
+        //faccia laterale frontale
+        var triangleFace2 = new THREE.Geometry();
+        triangleFace2.vertices.push( new THREE.Vector3(0,0,-1), new THREE.Vector3(0,0,0), new THREE.Vector3(0,1,0), new THREE.Vector3(0,1,-1));
+        triangleFace2.faces.push( new THREE.Face3(0,1,2), new THREE.Face3(0,2,3));
+        var material = new THREE.MeshBasicMaterial( { color: 0xffff00, wireframe: false}); //Giallo
+        face2 = new THREE.Mesh(triangleFace2, material);
+        scene.add(face2);
+
+        //faccia laterale posteriore
+        var triangleFace3 = new THREE.Geometry();
+        triangleFace3.vertices.push( new THREE.Vector3(1,0,-1), new THREE.Vector3(1,0,0), new THREE.Vector3(1,1,0), new THREE.Vector3(1,1,-1));
+        triangleFace3.faces.push( new THREE.Face3(0,2,1),new THREE.Face3(0,3,2));
+        var material = new THREE.MeshBasicMaterial( { color: 0x00ff00, wireframe: false}); //Verde
+        face3 = new THREE.Mesh(triangleFace3, material);
+        scene.add(face3);
+
+        //faccia giù
+        var triangleFace4 = new THREE.Geometry();
+        triangleFace4.vertices.push( new THREE.Vector3(0,0,0), new THREE.Vector3(1,0,0), new THREE.Vector3(1,0,-1), new THREE.Vector3(0,0,-1));
+        triangleFace4.faces.push( new THREE.Face3(0,2,1),new THREE.Face3(0,3,2));
+        var material = new THREE.MeshBasicMaterial( { color: 0x0000ff, wireframe: false}); //Blu
+        face4 = new THREE.Mesh(triangleFace4, material);
+        scene.add(face4);
+
+        //faccia su
+        var triangleFace5 = new THREE.Geometry();
+        triangleFace5.vertices.push( new THREE.Vector3(0,1,0), new THREE.Vector3(1,1,0), new THREE.Vector3(1,1,-1), new THREE.Vector3(0,1,-1));
+        triangleFace5.faces.push( new THREE.Face3(0,1,2),new THREE.Face3(0,2,3));
+        var material = new THREE.MeshBasicMaterial( { color: 0xffffff, wireframe: false}); //Bianco
+        face5 = new THREE.Mesh(triangleFace5, material);
+        scene.add(face5);
+
+        //Statistiche sul frame rate
+        stats = new Stats();
+        stats.domElement.style.position = 'absolute';
+        stats.domElement.style.top = '0px';
+        document.body.appendChild(stats.domElement);
+
+        camera.position.z = 5;
+        camera.position.y = 2;
+      }
+
+      function Render() {
+        requestAnimationFrame(Render);
+        stats.update();
+        renderer.render(scene, camera);
+      }
+
+      Start();
+      Render();
+
+    </script>
+  </body>
+</html>

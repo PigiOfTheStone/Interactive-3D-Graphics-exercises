@@ -1,0 +1,83 @@
+<html>
+  <head>
+      <title>Lamp material</title>
+
+      <style>
+        body {
+          font-family: Monospace;
+          background-color: #f0f0f0;
+          margin: 0px;
+          overflow: hidden;
+        }
+
+      canvas {
+        width: 100%;
+        height: 100%;
+      }
+      </style>
+
+      <script src="lib/three.min.js"></script>
+      <script src="lib/stats.min.js"></script>
+      <script src="lib/OBJLoader.js"></script>
+      <script src="lib/MTLLoader.js"></script>
+
+  </head>
+
+  <body>
+
+    <script>
+
+      var scene, renderer, camera, stats;
+
+      function Start() {
+        //Crea una scena una camera e un renderer
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        renderer = new THREE.WebGLRenderer();
+        renderer.setSize( window.innerWidth, window.innerHeight);
+        renderer.setClearColor( 0xf0f0f0 );
+        document.body.appendChild( renderer.domElement);
+
+
+        var materialLamp = new THREE.MTLLoader();
+
+        materialLamp.load(
+          'models/materials.mtl',
+          function (materials){
+            materials.preload();
+            var lamp = new THREE.OBJLoader();
+            lamp.setMaterials( materials );
+            lamp.load('models/model.obj', function ( object ) {
+              scene.add(object);
+            });
+
+          }
+        );
+
+
+
+
+
+
+        //Statistiche relative al Frame Rate
+        stats = new Stats();
+        stats.domElement.style.position = 'absolute';
+        stats.domElement.style.top = '0px';
+        document.body.appendChild( stats.domElement );
+
+        camera.position.z = 2;
+
+      }
+
+      function Render() {
+        requestAnimationFrame(Render);
+        stats.update();
+        renderer.render(scene, camera);
+      }
+
+      Start();
+      Render();
+
+    </script>
+  </body>
+</html>
